@@ -1,0 +1,8 @@
+# FOLDERS:
+.idea
+pdf
+
+
+# Files:
+test_create_json.py
+test_cred.json
