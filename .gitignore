@@ -6,3 +6,4 @@ pdf
 # Files:
 test_create_json.py
 test_cred.json
+.gitignore.bak
