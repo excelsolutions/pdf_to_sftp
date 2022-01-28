@@ -1,5 +1,5 @@
 # https://stackoverflow.com/questions/432385/sftp-in-python-platform-independent
-
+# cd C:/Users/lzmi1/PycharmProjects/PDF_TO_SFTP
 import pysftp as sftp
 import json
 def load_settings():
