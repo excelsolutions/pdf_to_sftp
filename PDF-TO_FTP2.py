@@ -4,7 +4,7 @@ from tkinter import messagebox as mbox
 import tkinter as tk  # wg sposobu: https://stackoverflow.com/questions/17466561/best-way-to-structure-a-tkinter-application
 import tkinter.ttk as ttk
 import json
-import get_txt_from_pdf
+import get_txt_from_pdf as pdf
 
 # sposób na nowe okno / formę:
 # https://stackoverflow.com/questions/16115378/tkinter-example-code-for-multiple-windows-why-wont-buttons-load-correctly
@@ -33,15 +33,16 @@ class MainApplication(tk.Frame):
 
         # Program
         path = 'pdf/united_states.PDF'
-        pdf = pdf_to_ftp
         pdf_text = ''
         char_start = 0
         char_to_find = 'Shipping number'
         pdf_text = pdf.text_extractor(path, 0)
         print(pdf_text)
-        char_start = pdf.find_text(pdf_text, char_to_find)
-        char_start = pdf.find_text_last_position(self, char_to_find, pdf_text)
-        self.lbl_Test.config(text=pdf.take_text_from_to_plus(pdf_text, char_start, len(char_to_find) + 1, char_start, len(char_to_find) + 16))
+        # char_start = pdf.find_text(self, pdf_text, char_to_find)
+
+        pos_start = pdf.find_text_last_position(char_to_find, pdf_text) + 1
+        pos_end = pos_start + 15
+        self.lbl_Test.config(text="-" + pdf.take_text_from_to(pdf_text, pos_start, pos_end) + "-")
 
 
     def new_window(self):
@@ -58,7 +59,6 @@ class MainApplication(tk.Frame):
 class form_Settings:
     def __init__(self, master):
         self.master = master
-        pdf1 = pdf_to_ftp
         # Preparing
         self.frame = tk.Frame(self.master)
         self.quitButton = tk.Button(self.frame, text='Quit', width=25, command=self.close_windows)
@@ -91,7 +91,7 @@ class form_Settings:
         self.txt_char_start.grid(row=0, column=1)
 
         path = 'pdf/united_states.PDF'
-        pdf_content = pdf1.load_content_pdf(self, path)
+        pdf_content = pdf.load_content_pdf(self, path)
         self.lbl_preview.config(text=pdf_content)
         # TESTING CODE  --->
         file_txt = open('PDF_TEXT', 'w+', encoding='utf8')
@@ -111,54 +111,6 @@ class form_Settings:
     def close_windows(self):
         self.master.destroy()
 
-
-class pdf_to_ftp:
-    def __init__(self, master):
-        pass
-
-    def test_pdf(path):
-        # creating an object
-        path = 'pdf/plik_testowy.PDF'
-        path1 = 'pdf/plik_testowy2.pdf'
-        file = open(path, 'rb')
-
-        # creating a pdf reader object
-        filereader = PdfFileReader(file)
-        # print the number of pages in pdf file
-        print(filereader.numPages)
-
-    def text_extractor(path, page_num):
-        with open(path, 'rb') as f:
-            pdf = PdfFileReader(f)
-            # get the first page
-            page = pdf.getPage(page_num)
-            # print(page)
-            # print('Page type: {}'.format(str(type(page))))
-            text = page.extractText()
-        return text
-
-    def find_text_first_position(txt, char_to_find_text):
-        """Procedure to find text inside string and return first position of this text"""
-        return txt.find(char_to_find_text)
-
-    def find_text_last_position(self, text_to_find, base_text):
-        pos = base_text.find(text_to_find) + len(text_to_find)
-        """Procedure to get last pos of string inside text"""
-        return pos
-
-    def take_text_from_to(txt, pos_start, pos_end):
-        """Taking text from specific position inside text to specific position"""
-        return txt[pos_start:pos_end]
-
-    def take_text_from_to_plus(txt, char_start, margin_start, char_count, end_spaces):
-        """Taking text from specific position inside text to specific position"""
-        return txt[char_start + margin_start:char_count + end_spaces]
-
-    def load_content_pdf(self, path):
-        pdf = pdf_to_ftp
-        pdf_text = pdf.text_extractor(path, 0)
-        tresc_pdf = pdf_text
-        return tresc_pdf
 
 
 if __name__ == '__main__':
