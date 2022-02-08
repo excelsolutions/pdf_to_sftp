@@ -4,7 +4,7 @@ from tkinter import messagebox as mbox
 import tkinter as tk  # wg sposobu: https://stackoverflow.com/questions/17466561/best-way-to-structure-a-tkinter-application
 import tkinter.ttk as ttk
 import json
-
+import get_txt_from_pdf
 
 # sposób na nowe okno / formę:
 # https://stackoverflow.com/questions/16115378/tkinter-example-code-for-multiple-windows-why-wont-buttons-load-correctly
@@ -40,9 +40,8 @@ class MainApplication(tk.Frame):
         pdf_text = pdf.text_extractor(path, 0)
         print(pdf_text)
         char_start = pdf.find_text(pdf_text, char_to_find)
-
-        self.lbl_Test.config(text=pdf.take_text_from_to_plus(pdf_text, char_start, len(char_to_find) + 1, char_start, len(char_to_find) + 15))
-        print("char_to_find:", pdf.take_text_from_to(pdf_text, char_start, 15))
+        char_start = pdf.find_text_last_position(self, char_to_find, pdf_text)
+        self.lbl_Test.config(text=pdf.take_text_from_to_plus(pdf_text, char_start, len(char_to_find) + 1, char_start, len(char_to_find) + 16))
 
 
     def new_window(self):
@@ -92,9 +91,18 @@ class form_Settings:
         self.txt_char_start.grid(row=0, column=1)
 
         path = 'pdf/united_states.PDF'
-        self.lbl_preview.config(text=pdf1.load_content_pdf(self, path))
-
-
+        pdf_content = pdf1.load_content_pdf(self, path)
+        self.lbl_preview.config(text=pdf_content)
+        # TESTING CODE  --->
+        file_txt = open('PDF_TEXT', 'w+', encoding='utf8')
+        file_txt.writelines(pdf_content)
+        file_txt.close()
+        str_to_find = "Shipping number"
+        find_char_pos = pdf_content.find(str_to_find)
+        start_char = find_char_pos + len(str_to_find)
+        end_char = start_char + 16
+        print("Znaleziono: ", pdf_content[start_char:end_char])
+        # TESTING CODE <----
     def save_settings(self):
         config = {"key1": "value1", "key2": "value2"}
         with open('.json', 'w') as f:
@@ -129,14 +137,22 @@ class pdf_to_ftp:
             text = page.extractText()
         return text
 
-    def find_text(txt, char_to_find_text):
+    def find_text_first_position(txt, char_to_find_text):
+        """Procedure to find text inside string and return first position of this text"""
         return txt.find(char_to_find_text)
 
-    def take_text_from_to(txt, char_start, char_count):
-        return txt[char_start + len(txt):char_start + len(txt) + char_count]
+    def find_text_last_position(self, text_to_find, base_text):
+        pos = base_text.find(text_to_find) + len(text_to_find)
+        """Procedure to get last pos of string inside text"""
+        return pos
 
-    def take_text_from_to_plus(txt, char_start, maring_start, char_count, end_spaces):
-        return txt[char_start + maring_start:char_count + end_spaces]
+    def take_text_from_to(txt, pos_start, pos_end):
+        """Taking text from specific position inside text to specific position"""
+        return txt[pos_start:pos_end]
+
+    def take_text_from_to_plus(txt, char_start, margin_start, char_count, end_spaces):
+        """Taking text from specific position inside text to specific position"""
+        return txt[char_start + margin_start:char_count + end_spaces]
 
     def load_content_pdf(self, path):
         pdf = pdf_to_ftp
